@@ -8,7 +8,7 @@ function parse(buffer)
   local event = {
     time   = buffer:readUInt32LE(1),
     number = buffer:readUInt8(8),
-    value  = buffer:readUInt16LE(5),
+    value  = buffer:readInt16LE(5),
   }
   local type = buffer:readUInt8(7)
   if Bit.band(type, 0x80) > 0 then event.init = true end
@@ -39,7 +39,6 @@ end
 
 function Joystick.prototype:on_read(chunk)
   local event = parse(Buffer:new(chunk))
-  event.id = self.id
   self:emit(event.type, event)
   if self.fd then self:start_read() end
 end
