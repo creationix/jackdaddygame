@@ -29,6 +29,7 @@ end
 
 function Joystick.prototype:on_open(fd)
   self.fd = fd
+  self:emit("opened")
   self:start_read()
 end
 
