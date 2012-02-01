@@ -5,7 +5,7 @@ local MIME = require('mime')
 
 return function (root, index)
   return function (req, res, next)
-    if not req.method == "GET" then return next() end
+    if not (req.method == "GET") then return next() end
     req.uri = req.uri or Url.parse(req.url)
     local path = Path.join(root, req.uri.pathname)
     FS.stat(path, function (err, stat)
@@ -24,12 +24,17 @@ return function (root, index)
       end
       local stream = FS.create_read_stream(path);
       stream:on('error', next)
-      stream:once('data', function ()
+      local sent
+      local function header()
+        if sent then return end
+        sent = true
         res:write_head(200, {
           ["Content-Type"] = MIME.get_type(path),
           ["Content-Length"] = stat.size
         })
-      end)
+      end
+      stream:on('end', header)
+      stream:once('data', header)
       stream:pipe(res)
     end)
   end
