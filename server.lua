@@ -1,7 +1,16 @@
 local Tcp = require('tcp')
+local Http = require('http')
+local Stack = require('stack')
 local Emitter = require('emitter')
 local JsonStream = require('./jsonstream')
 local Json = require('json')
+local Path = require('path')
+
+-- An HTTP server for browsers to watch
+Http.create_server("0.0.0.0", 8080, Stack.stack(
+  require('./static')(Path.join(__dirname, "ui"), "index.html")
+))
+print("Http server listening at http://localhost:8080/")
 
 -- A server for joystick clients to connect to
 Tcp:create_server("0.0.0.0", 5000, function (socket)
