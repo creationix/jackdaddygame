@@ -44,7 +44,7 @@ Http.create_server("0.0.0.0", 8080, Stack.stack(
       return new
     end
     local function respond()
-      local json = Json.stringify(filter())
+      local json = Json.stringify(filter()) .."\n"
       res:write_head(200, {
         ["Set-Cookie"] = "since="..history[#history].time,
         ["Content-Type"] = "application/json",
