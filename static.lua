@@ -22,14 +22,14 @@ return function (root, index)
         res:finish()
         return
       end
-      local stream = FS.create_read_stream(path);
+      local stream = FS.createReadStream(path);
       stream:on('error', next)
       local sent
       local function header()
         if sent then return end
         sent = true
-        res:write_head(200, {
-          ["Content-Type"] = MIME.get_type(path),
+        res:writeHead(200, {
+          ["Content-Type"] = MIME.getType(path),
           ["Content-Length"] = stat.size
         })
       end

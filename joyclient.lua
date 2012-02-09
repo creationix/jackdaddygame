@@ -1,8 +1,7 @@
-local Joystick = require('./joystick')
-local JsonStream = require('./jsonstream')
-local Json = require('json')
-local Emitter = require('emitter')
-local TCP = require('tcp')
+local Joystick = require('./joystick').Joystick
+local JSON = require('json')
+local Emitter = require('core').Emitter
+local Tcp = require('tcp').Tcp
 
 if not process.argv[1] then 
   print("Please pass in joystick number as first argument")
@@ -12,17 +11,17 @@ local host = process.argv[2] or "0.0.0.0"
 local port = process.argv[3] or 5000
 
 local function connect(host, port, callback)
-  local client = TCP:new()
+  local client = Tcp:new()
   client:connect(host, port)
   client:on("error", callback)
   client:on("connect", function ()
-    client:remove_listener("error", callback)
-    client:read_start()
+    client:removeListener("error", callback)
+    client:readStart()
     local emitter = Emitter:new()
     function emitter.send(message)
-      client:write(Json.stringify(message))
+      client:write(JSON.stringify(message))
     end
-    local parser = JsonStream(function (value)
+    local parser = JSON.streamingParser(function (value)
       emitter:emit("message", value)
     end)
     client:on('data', function (chunk)
